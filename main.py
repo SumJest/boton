@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 
 from vkwave.api import API
@@ -5,7 +6,7 @@ from vkwave.client import AIOHTTPClient
 from vkwave.bots import SimpleLongPollBot, SimpleBotEvent
 from vkwave.bots.core.dispatching import filters
 
-from utils import filemanager as fm
+from utils import filemanager as fm, my_filters
 from utils.messages import Messages
 from utils import usermanager as um
 
@@ -22,6 +23,10 @@ print("Bot successful started")
 
 
 # ------------
+
+def get_random_id():
+    return random.getrandbits(32)
+
 
 async def log(event: SimpleBotEvent):
     now = datetime.today()
@@ -48,6 +53,23 @@ async def start_message(event: SimpleBotEvent):
 async def text_message(event: SimpleBotEvent):
     await log(event)
     return event.object.object.message.text
+
+
+@bot.handler(my_filters.JoinFilter())
+async def text_message(event: SimpleBotEvent):
+    print(f"Новый участник группы [{event.object.object.user_id}]!")
+
+
+@bot.handler(my_filters.LeaveFilter())
+async def text_message(event: SimpleBotEvent):
+    print(f"Участник [{event.object.object.user_id}] вышел из группы!")
+
+
+@bot.handler(my_filters.NewPostFilter())
+async def text_message(event: SimpleBotEvent):
+    await api.messages.send(user_id=144268714, random_id=get_random_id(),
+                            attachment=f"wall{event.object.object.owner_id}_{event.object.object.id}")
+    print(f"Новый пост!")
 
 
 if __name__ == "__main__":
