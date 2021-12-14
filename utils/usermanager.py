@@ -17,7 +17,11 @@ class User(object):
         return f"user_id: {self.user_id}, action_state: {self.action_state}, group: {self.group},  " \
                f"is_blocked: {self.is_blocked} "
 
-    def get_json(self):
+    def get_json(self) -> str:
+        """
+        Function returns json object of user
+        :return: str json
+        """
         return json.dumps(self.__dict__)
 
 

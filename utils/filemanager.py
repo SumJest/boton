@@ -27,6 +27,10 @@ def check_path():
 
 
 def get_config() -> dict:
+    """
+    Loads configuration file.
+    :return: Dictionary object
+    """
     with open('config.json', 'r') as file:
         config = json.loads(file.read())
         file.close()

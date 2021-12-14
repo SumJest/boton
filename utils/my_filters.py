@@ -27,3 +27,12 @@ class NewPostFilter(base.BaseFilter):
 
     async def check(self, event: SimpleBotEvent) -> base.FilterResult:
         return base.FilterResult(event.object.type == "wall_post_new")
+
+
+class HasPayloadFilter(base.BaseFilter):
+    """
+    Проверяет прикреплена ли к сообщению гео-метка
+    """
+
+    async def check(self, event: SimpleBotEvent) -> base.FilterResult:
+        return base.FilterResult(event.object.type == "message_new" and event.object.object.message.payload is not None)
