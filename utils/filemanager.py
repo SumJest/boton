@@ -1,5 +1,6 @@
 import json
 import os
+import typing
 
 from utils import usermanager
 
@@ -50,6 +51,15 @@ def get_user(user_id: int) -> usermanager.User:
         return user
     else:
         print(f"File {user_id}.user not found!")
+
+
+def get_users() -> typing.List[usermanager.User]:
+    users: typing.List[usermanager.User] = []
+    for file in os.listdir('users'):
+        args = file.split('.')
+        user = get_user(int(''.join(args[:len(args) - 1])))
+        users.append(user)
+    return users
 
 
 def update_user(user: usermanager.User):

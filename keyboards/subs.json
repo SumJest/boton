@@ -1,0 +1,32 @@
+{
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "Добавить",
+          "payload": {"kb_id": "subs", "btn_id": "2"}
+        },
+        "color": "positive"
+      },
+      {
+        "action": {
+          "type": "text",
+          "label": "Удалить",
+          "payload": {"kb_id": "subs", "btn_id": "3"}
+        },
+        "color": "negative"
+      }
+    ],
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "Назад",
+          "payload": {"btn_id": "0"}
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}

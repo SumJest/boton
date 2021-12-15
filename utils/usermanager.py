@@ -1,20 +1,24 @@
 import json
+import typing
 
 
 class User(object):
     user_id: int
     action_state: int
     is_blocked: bool
-    group: str
+    groups: typing.List[str]
+    subs: typing.List[str]
 
-    def __init__(self, user_id: int, action_state: int = 0, group: str = "", is_blocked: bool = False):
+    def __init__(self, user_id: int, action_state: int = 0, groups: typing.List[str] = [], subs: typing.List[str] = [],
+                 is_blocked: bool = False):
         self.user_id = user_id
         self.action_state = action_state
-        self.group = group
+        self.groups = groups
+        self.subs = subs
         self.is_blocked = is_blocked
 
     def __repr__(self):
-        return f"user_id: {self.user_id}, action_state: {self.action_state}, group: {self.group},  " \
+        return f"user_id: {self.user_id}, action_state: {self.action_state}, groups: {'/'.join(self.groups)},  " \
                f"is_blocked: {self.is_blocked} "
 
     def get_json(self) -> str:
@@ -23,6 +27,12 @@ class User(object):
         :return: str json
         """
         return json.dumps(self.__dict__)
+
+
+class ActionStates:
+    IDLE = 0
+    ENTERING_HASHTAG = 1
+    DELETING_HASHTAG = 2
 
 
 def get_user_from_json(json_user: str) -> User:
