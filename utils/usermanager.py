@@ -30,6 +30,9 @@ class User(object):
 
 
 class ActionStates:
+    """
+    Enum of possible action states
+    """
     IDLE = 0
     ENTERING_HASHTAG = 1
     DELETING_HASHTAG = 2

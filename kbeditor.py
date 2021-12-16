@@ -2,6 +2,8 @@ import json
 
 from vkwave.bots import Keyboard
 
+c_keyboard: Keyboard
+c_name: str = ''
 
 def load_json(json_keyboard: str) -> Keyboard:
     d_keyboard = json.loads(json_keyboard)
@@ -15,8 +17,14 @@ def load_json(json_keyboard: str) -> Keyboard:
     return keyboard
 
 
-with open('keyboards/main.json', 'r+', encoding='utf-8') as f:
-    keyboard = load_json(f.read())
-    keyboard.add_text_button("Задать вопрос", 'secondary', {'btn_id': 4, 'kb_id': 'main', 'txt_id': '1'})
-    f.write(keyboard.get_keyboard())
-    f.close()
+while True:
+    inp = input().split(' ')
+    cmd = inp[0]
+    args = inp[1:]
+    if cmd == 'open':
+        c_name = args[1]
+        with open(f'keyboards/{c_name}.json', 'r', encoding='utf-8') as f:
+            c_keyboard = load_json(f.read())
+            f.close()
+        print(f"Keyboard {c_name} opened")
+    # elif add

@@ -124,8 +124,7 @@ async def text_message(event: SimpleBotEvent):
         user = fm.get_user(user_id)
         if user.action_state == um.ActionStates.ENTERING_HASHTAG:
             hash_tag = event.object.object.message.text.lower()
-            if hash_tag.startswith('#'):
-                hash_tag = hash_tag.lstrip('#')
+            hash_tag = hash_tag.lstrip('#')
             if hash_tag not in user.subs:
                 user.subs.append(hash_tag)
             user.action_state = um.ActionStates.IDLE

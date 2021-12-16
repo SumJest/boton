@@ -54,6 +54,10 @@ def get_user(user_id: int) -> usermanager.User:
 
 
 def get_users() -> typing.List[usermanager.User]:
+    """
+    Function reads all users in directory and returns list of User
+    :return: list of User
+    """
     users: typing.List[usermanager.User] = []
     for file in os.listdir('users'):
         args = file.split('.')
