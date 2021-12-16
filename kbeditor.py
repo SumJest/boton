@@ -10,14 +10,13 @@ def load_json(json_keyboard: str) -> Keyboard:
     for i in range(count):
         for button2 in d_keyboard['buttons'][i]:
             keyboard.add_text_button(button2['action']['label'], button2['color'], button2['action']['payload'])
-        if i != count-1:
+        if i != count - 1:
             keyboard.add_row()
     return keyboard
 
 
-
-with open('keyboards/main.json', 'w', encoding='utf-8') as f:
-    keyboard = Keyboard()
-    keyboard.add_text_button("Добавить", '')
+with open('keyboards/main.json', 'r+', encoding='utf-8') as f:
+    keyboard = load_json(f.read())
+    keyboard.add_text_button("Задать вопрос", 'secondary', {'btn_id': 4, 'kb_id': 'main', 'txt_id': '1'})
     f.write(keyboard.get_keyboard())
     f.close()

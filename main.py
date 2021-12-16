@@ -31,12 +31,14 @@ print("Bot successful started")
 def get_random_id():
     return random.getrandbits(32)
 
+
 def is_int(n: str) -> bool:
     try:
         int(n)
         return True
     except ValueError:
         return False
+
 
 async def log(event: SimpleBotEvent):
     now = datetime.today()
@@ -79,20 +81,27 @@ async def button_event(event: SimpleBotEvent):
             if len(user.subs) != 0:
                 answer = ""
                 for i in range(1, len(user.subs) + 1):
-                    answer += f"{i}. #{user.subs[i-1]}"
+                    answer += f"{i}. #{user.subs[i - 1]} \n"
                 await event.answer(message=answer)
         elif button_id == 2:
-            await event.answer("Введите хэштэг, на который хотите подписаться (#пример): ")
+            await event.answer("Введите хэштег, на который хотите подписаться (#пример): ")
             user_id = event.object.object.message.from_id
             user = fm.get_user(user_id)
             user.action_state = um.ActionStates.ENTERING_HASHTAG
             fm.update_user(user)
         elif button_id == 3:
-            await event.answer("Введите номер хэштэга, который хотите удалить из подписок: ")
+            await event.answer("Введите номер хештега, который хотите удалить из подписок: ")
             user_id = event.object.object.message.from_id
             user = fm.get_user(user_id)
             user.action_state = um.ActionStates.DELETING_HASHTAG
             fm.update_user(user)
+        elif button_id == 4:
+            user_id = event.object.object.message.from_id
+            user = fm.get_user(user_id)
+            user.action_state = um.ActionStates.ASKING
+            fm.update_user(user)
+            await event.answer("Впишите ваш вопрос и на него обязательно ответят специалисты.",
+                               keyboard=km.keyboards['cancel'])
     if 'open_id' in payload.keys():
         open_id = payload['open_id']
         await event.answer(message="Выберете интересующую вас тему.", keyboard=km.keyboards[open_id])
@@ -117,7 +126,7 @@ async def text_message(event: SimpleBotEvent):
             hash_tag = event.object.object.message.text.lower()
             if hash_tag.startswith('#'):
                 hash_tag = hash_tag.lstrip('#')
-            if not hash_tag in user.subs:
+            if hash_tag not in user.subs:
                 user.subs.append(hash_tag)
             user.action_state = um.ActionStates.IDLE
             fm.update_user(user)
@@ -129,15 +138,22 @@ async def text_message(event: SimpleBotEvent):
                 return "Введите число!"
             id = int(message)
             if 1 <= id <= len(user.subs):
-                user.subs.pop(id-1)
+                user.subs.pop(id - 1)
                 user.action_state = um.ActionStates.IDLE
                 fm.update_user(user)
                 await event.answer("Готово", keyboard=km.keyboards['main'])
                 return
             else:
-                return "Хэштэг с таким номером не найден в подписках!"
-
-    return "Ваш вопрос зарегистрирован, пожалуйста подождите и вам ответит специалист!"
+                return "Хэштег с таким номером не найден в подписках!"
+        elif user.action_state == um.ActionStates.ASKING:
+            message = event.object.object.message.text
+            if not message:
+                return "Введите пожалуйста свой вопрос."
+            await api.messages.mark_as_important_conversation(peer_id=user.user_id, important=1)
+            user.action_state = um.ActionStates.IDLE
+            fm.update_user(user)
+            await event.answer("Ваш вопрос зарегистрирован!",
+                               keyboard=km.keyboards['main'])
 
 
 @bot.handler(my_filters.JoinFilter())
@@ -155,9 +171,9 @@ async def post_event(event: SimpleBotEvent):
     for user in fm.get_users():
         for hash_tag in user.subs:
             if f"#{hash_tag}" in event.object.object.text.lower():
-                print(hash_tag)
                 await api.messages.send(user_id=user.user_id, random_id=get_random_id(), message="Новый пост",
                                         attachment=f"wall{event.object.object.owner_id}_{event.object.object.id}")
+                break
 
 
 if __name__ == "__main__":

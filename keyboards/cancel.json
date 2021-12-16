@@ -1,0 +1,17 @@
+{
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "Отмена",
+          "payload": {
+            "btn_id": 0,
+            "kb_id": "cancel"
+          }
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}

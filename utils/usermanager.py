@@ -33,6 +33,7 @@ class ActionStates:
     IDLE = 0
     ENTERING_HASHTAG = 1
     DELETING_HASHTAG = 2
+    ASKING = 3
 
 
 def get_user_from_json(json_user: str) -> User:
