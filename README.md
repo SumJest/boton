@@ -39,7 +39,8 @@
 - Красные кнопки возврат/удаление
 
 ##### Клавиатура Подписки
-[![sub keyboard](https://i.imgur.com/Iqcm1iS.png "sub keyboard")](https://imgur.com/a/VHGVpkF "sub keyboard")
+[![sub keyboard](https://i.imgur.com/Iqcm1iS.png "sub keyboard")](https://imgur.com/a/VHGVpkF "sub keyboard") 
+
 Клавиатура для управления подписками на хэштэги.
 
 ------------
