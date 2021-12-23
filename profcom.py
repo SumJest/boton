@@ -10,7 +10,6 @@ from utils import keyboardmanager
 from utils import usermanager as um
 from utils.messages import Messages
 
-
 fm.check_path()
 
 config = fm.get_config()
@@ -47,21 +46,18 @@ async def log(event: SimpleBotEvent):
         file.close()
 
 
-@bot.message_handler(filters.TextFilter(["начать", "start"]))
-async def start_message(event: SimpleBotEvent):
-    await log(event)
-    user_id = event.object.object.message.from_id
-    if not fm.user_exists(user_id):
-        user = um.User(user_id)
-        fm.update_user(user)
-        name = (await api.users.get(user_ids=user_id)).response[0].first_name
-        await event.answer(message=Messages.hello_message.format(name=name), keyboard=km.keyboards['main'])
-
-
 @bot.message_handler(my_filters.HasPayloadFilter())
 async def button_event(event: SimpleBotEvent):
     await log(event)
     payload: dict = json.loads(event.object.object.message.payload)
+    if 'command' in payload.keys():
+        if payload['command'] == "start":
+            user_id = event.object.object.message.from_id
+            if not fm.user_exists(user_id):
+                user = um.User(user_id)
+                fm.update_user(user)
+                name = (await api.users.get(user_ids=user_id)).response[0].first_name
+                await event.answer(message=Messages.hello_message.format(name=name), keyboard=km.keyboards['main'])
     if 'btn_id' in payload.keys():
         button_id = int(payload['btn_id'])
         if button_id == 0:
