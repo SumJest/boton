@@ -1,5 +1,4 @@
 import os
-from utils.usermanager import User
 
 
 # def deserialize_json(keyboard: str) -> Keyboard:

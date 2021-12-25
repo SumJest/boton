@@ -50,3 +50,6 @@ def get_user_from_json(json_user: str) -> User:
     for key in attr.keys():
         setattr(user, key, attr[key])
     return user
+
+
+
