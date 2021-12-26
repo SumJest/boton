@@ -13,7 +13,7 @@
     groups: typing.List[str]
     subs: typing.List[str]
 ```
-Параметр `groups`  хранит в себе роли, которым принадлежит пользователь. К примеру *admin*, *expert*
+Параметр `groups`  хранит в себе роли, которым принадлежит пользователь. К примеру *admin*, *expert*. <br />
 Параметр `action_state` хранит в себе текущее состояние пользователя. Все состояния описаны в файле [usermanager.py](https://github.com/SumJest/boton/blob/master/utils/usermanager.py "usermanager.py")
 
 
