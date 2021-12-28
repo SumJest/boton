@@ -28,6 +28,11 @@ def get_random_id():
 
 
 async def log(event: SimpleBotEvent):
+    """
+    Function logs in console and log file a new message event
+    :param event: Message new event object
+    :return:
+    """
     now = datetime.today()
     line = f"[{now.strftime('%d.%m.%Y-%H:%M:%S')}] [{event.object.type}] ({event.object.object.message.from_id}): " \
            f"{event.object.object.message.text}"
@@ -85,6 +90,10 @@ async def take_action(user_id: int, button_id: int, message_id: int = -1) -> Non
         await api.messages.send(user_id=user_id, message=Messages.enter_n_hashtag,
                                 random_id=get_random_id())
     elif button_id == 4:
+        important = (await api.messages.get_conversations_by_id(peer_ids=user_id)).response.items[0].important
+        if important:
+            await api.messages.send(user_id=user_id, message=Messages.already_important, random_id=get_random_id())
+            return
         user = fm.get_user(user_id)
         user.action_state = um.ActionStates.ASKING
         fm.update_user(user)
@@ -93,19 +102,16 @@ async def take_action(user_id: int, button_id: int, message_id: int = -1) -> Non
     elif button_id == 5:
         await api.messages.mark_as_important_conversation(peer_id=user_id, important=0)
         if message_id != -1:
-            await api.messages.edit(peer_id=user_id, message="Хорошо, я закрыл вопрос! Чтобы начать новый нужно нажать "
-                                                             "на кнопку \"Задать вопрос\"", keyboard="",
+            await api.messages.edit(peer_id=user_id, message=Messages.close_question, keyboard="",
                                     message_id=message_id)
         else:
-            await api.messages.send(user_id=user_id, message="Хорошо, я закрыл вопрос! Чтобы начать новый нужно нажать "
-                                                             "на кнопку \"Задать вопрос\"", random_id=get_random_id())
+            await api.messages.send(user_id=user_id, message=Messages.close_question, random_id=get_random_id())
     elif button_id == 6:
         if message_id != -1:
-            await api.messages.edit(peer_id=user_id, message="Хорошо, вопрос остается открытым", keyboard="",
+            await api.messages.edit(peer_id=user_id, message=Messages.stay_question, keyboard="",
                                     message_id=message_id)
         else:
-            await api.messages.send(user_id=user_id, message="Хорошо, вопрос остается открытым",
-                                    random_id=get_random_id())
+            await api.messages.send(user_id=user_id, message=Messages.stay_question, random_id=get_random_id())
 
 
 @bot.message_handler(my_filters.HasPayloadFilter())
@@ -143,8 +149,8 @@ async def text_message(event: SimpleBotEvent):
     else:
         user = fm.get_user(user_id)
         if user.action_state == um.ActionStates.IDLE:
-            conversation = (await api.messages.get_conversations_by_id(peer_ids=user_id)).response.items[0].important
-            if not conversation:
+            important = (await api.messages.get_conversations_by_id(peer_ids=user_id)).response.items[0].important
+            if not important:
                 await api.messages.send(user_id=user_id, message=random.choice(Messages.want_to_ask),
                                         random_id=get_random_id())
         elif user.action_state == um.ActionStates.ENTERING_HASHTAG:
