@@ -204,7 +204,7 @@ async def post_event(event: SimpleBotEvent):
 @bot.handler()
 async def any_event(event: SimpleBotEvent):
     if event.object.type == "message_reply" and event.object.object.admin_author_id is not None:
-        if event.object.object.text == "/end":
+        if "/end-dialog" in event.object.object.text:
             msg_id = event.object.object.id
             await api.messages.edit(message_id=msg_id, message="Мы ответили на ваш вопрос?",
                                     keyboard=km.gen_end_dialog_keyboard(msg_id), peer_id=event.object.object.peer_id)
