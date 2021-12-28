@@ -45,7 +45,7 @@ def get_user(user_id: int) -> usermanager.User:
     :return: User object
     """
     if f"{user_id}.user" in os.listdir("users"):
-        file = open(f"users/{user_id}.user", "r")
+        file = open(f"users/{user_id}.user", "r", encoding='utf-8')
         user = usermanager.get_user_from_json(file.read())
         file.close()
         return user
@@ -72,7 +72,7 @@ def update_user(user: usermanager.User):
     :param user: User object
     :return: None
     """
-    with open(f"users/{user.user_id}.user", "w") as file:
+    with open(f"users/{user.user_id}.user", "w", encoding='utf-8') as file:
         file.write(user.get_json())
         file.close()
 

@@ -50,11 +50,12 @@ async def new_user(user_id: int) -> None:
                             random_id=get_random_id(), keyboard=km.keyboards['main'])
 
 
-async def take_action(user_id: int, button_id: int) -> None:
+async def take_action(user_id: int, button_id: int, message_id: int = -1) -> None:
     """
     Function do action, that button with button_id means.
     :param user_id: Id of user
     :param button_id: Id of button
+    :param message_id:
     :return: None
     """
     if button_id == 0:
@@ -89,6 +90,22 @@ async def take_action(user_id: int, button_id: int) -> None:
         fm.update_user(user)
         await api.messages.send(user_id=user_id, message=Messages.enter_question,
                                 keyboard=km.keyboards['cancel'], random_id=get_random_id())
+    elif button_id == 5:
+        await api.messages.mark_as_important_conversation(peer_id=user_id, important=0)
+        if message_id != -1:
+            await api.messages.edit(peer_id=user_id, message="Хорошо, я закрыл вопрос! Чтобы начать новый нужно нажать "
+                                                             "на кнопку \"Задать вопрос\"", keyboard="",
+                                    message_id=message_id)
+        else:
+            await api.messages.send(user_id=user_id, message="Хорошо, я закрыл вопрос! Чтобы начать новый нужно нажать "
+                                                             "на кнопку \"Задать вопрос\"", random_id=get_random_id())
+    elif button_id == 6:
+        if message_id != -1:
+            await api.messages.edit(peer_id=user_id, message="Хорошо, вопрос остается открытым", keyboard="",
+                                    message_id=message_id)
+        else:
+            await api.messages.send(user_id=user_id, message="Хорошо, вопрос остается открытым",
+                                    random_id=get_random_id())
 
 
 @bot.message_handler(my_filters.HasPayloadFilter())
@@ -175,6 +192,7 @@ async def text_message(event: SimpleBotEvent):
 
 @bot.handler(my_filters.NewPostFilter())
 async def post_event(event: SimpleBotEvent):
+    print("New post")
     for user in fm.get_users():
         for hash_tag in user.subs:
             if f"#{hash_tag}" in event.object.object.text.lower():
@@ -183,15 +201,19 @@ async def post_event(event: SimpleBotEvent):
                 break
 
 
-# @bot.handler()
-# async def any_event(event: SimpleBotEvent):
-#    if event.object.type == "message_reply" and event.object.object.admin_author_id is not None:
-#        print(event.object.object)
-# message = event.object.object
-# resp = (await api.users.get(user_ids=message.admin_author_id)).response[0]
-# await api.messages.edit(peer_id=message.peer_id,
-#                         conversation_message_id=message.conversation_message_id,
-#                         message=f"{message.text} \nОтветил(а): {resp.first_name} {resp.last_name[0]}.")
+@bot.handler()
+async def any_event(event: SimpleBotEvent):
+    if event.object.type == "message_reply" and event.object.object.admin_author_id is not None:
+        if event.object.object.text == "/end":
+            msg_id = event.object.object.id
+            await api.messages.edit(message_id=msg_id, message="Мы ответили на ваш вопрос?",
+                                    keyboard=km.gen_end_dialog_keyboard(msg_id), peer_id=event.object.object.peer_id)
+    if event.object.type == "message_event" and event.object.object.payload is not None:
+        payload = event.object.object.payload
+        if "btn_id" in payload.keys():
+            button_id = int(payload["btn_id"])
+            user_id = event.object.object.user_id
+            await take_action(user_id, button_id, int(payload["msg_id"]) if "msg_id" in payload.keys() else -1)
 
 
 if __name__ == "__main__":
